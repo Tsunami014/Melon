@@ -6,4 +6,9 @@ canvas {
     height: 100vh;
     image-rendering: pixelated;
 }
-body > *:not(#mainCanvas) { display: none; }
+body > *:not(#mainCanvas) {
+    position: absolute;
+    top: calc(110vh + 50%); /* Start offscreen */
+    translate: -50% -50%;
+    width: max-content;
+}

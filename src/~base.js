@@ -32,7 +32,7 @@ function drawHexagon(x, y, fillColor) {
     ctx.stroke()
 }
 
-function drawGrid() {
+function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     const cx = Math.round(camX - canvas.width / 2)
@@ -53,6 +53,11 @@ function drawGrid() {
             drawHexagon(worldX - cx, worldY - cy, getPixelAt(col, row))
         }
     }
+
+    const rect = canvas.getBoundingClientRect()
+    const sx = rect.width / canvas.width
+    const sy = rect.height / canvas.height
+    placeElms(cx, cy, sx, sy)
 }
 
 let drawQueued = false
@@ -61,7 +66,7 @@ function requestDraw() {
     drawQueued = true
     requestAnimationFrame(() => {
         drawQueued = false
-        drawGrid()
+        update()
     })
 }
 
@@ -69,7 +74,7 @@ function resize() {
     canvas.width = Math.ceil(window.innerWidth/scale)
     canvas.height = Math.ceil(window.innerHeight/scale)
     ctx.imageSmoothingEnabled = false
-    drawGrid()
+    update()
 }
 window.addEventListener('resize', resize)
 
