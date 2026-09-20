@@ -41,6 +41,41 @@ posToWorld = function(strpos) {
     const xoffs = (((row % 2) + 2) % 2 === 0) ? 0 : hDist / 2
     return { x: col * hDist + xoffs, y: row * vDist }
 }
+
+function readBound(name) {
+    for (const el of [canvas, document.body, document.documentElement]) {
+        const v = el?.getAttribute(name)
+        if (v != null && v.trim() !== '') {
+            return posToWorld(v)
+        }
+    }
+    return null
+}
+
+function clampAxis(v, lo, hi) {
+    if (lo > hi) [lo, hi] = [hi, lo]
+    return Math.min(Math.max(v, lo), hi)
+}
+
+function clampCam() {
+    const min = readBound('data-min')
+    const max = readBound('data-max')
+
+    const loX = min ? min.x : -Infinity
+    const hiX = max ? max.x : Infinity
+    const loY = min ? min.y : -Infinity
+    const hiY = max ? max.y : Infinity
+
+    camX = clampAxis(camX, loX, hiX)
+    camY = clampAxis(camY, loY, hiY)
+}
+
+function moveCam(dx, dy) {
+    camX += dx
+    camY += dy
+    clampCam()
+}
+
 function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -83,6 +118,7 @@ function resize() {
     canvas.width = Math.ceil(window.innerWidth/scale)
     canvas.height = Math.ceil(window.innerHeight/scale)
     ctx.imageSmoothingEnabled = false
+    clampCam()
     update()
 }
 window.addEventListener('resize', resize)
@@ -104,8 +140,7 @@ canvas.addEventListener('pointerdown', e => {
 
 canvas.addEventListener('pointermove', e => {
     if (!dragging) return
-    camX -= (e.clientX - lastX) / scale
-    camY -= (e.clientY - lastY) / scale
+    moveCam(-(e.clientX - lastX) / scale, -(e.clientY - lastY) / scale)
     lastX = e.clientX
     lastY = e.clientY
     requestDraw()
@@ -120,18 +155,17 @@ canvas.addEventListener('pointercancel', endDrag)
 
 canvas.addEventListener('wheel', e => {
     e.preventDefault()
-    camX += e.deltaX / scale
-    camY += e.deltaY / scale
+    moveCam(e.deltaX / scale, e.deltaY / scale)
     requestDraw()
 }, { passive: false })
 
 window.addEventListener('keydown', e => {
     const step = 4 * hexRadius
     switch (e.key) {
-        case 'ArrowLeft': camX -= step; break
-        case 'ArrowRight': camX += step; break
-        case 'ArrowUp': camY -= step; break
-        case 'ArrowDown': camY += step; break
+        case 'ArrowLeft': moveCam(-step, 0); break
+        case 'ArrowRight': moveCam(step, 0); break
+        case 'ArrowUp': moveCam(0, -step); break
+        case 'ArrowDown': moveCam(0, step); break
         default: return
     }
     e.preventDefault()
