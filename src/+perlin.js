@@ -1,5 +1,6 @@
 'use strict';
 // Thanks to https://github.com/joeiddon/perlin !
+
 let perlin = {
     rand_vect: function(){
         let theta = Math.random() * 2 * Math.PI;
@@ -24,11 +25,8 @@ let perlin = {
     },
     seed: function(){
         this.gradients = {};
-        this.memory = {};
     },
     get: function(x, y) {
-        if (this.memory.hasOwnProperty([x,y]))
-            return this.memory[[x,y]];
         let xf = Math.floor(x);
         let yf = Math.floor(y);
         //interpolate
@@ -39,8 +37,16 @@ let perlin = {
         let xt = this.interp(x-xf, tl, tr);
         let xb = this.interp(x-xf, bl, br);
         let v = this.interp(y-yf, xt, xb);
-        this.memory[[x,y]] = v;
         return v;
     }
 }
 perlin.seed();
+
+function perlinOctaves(x, y, scale, octaves, gain, lacunarity) {
+    let sum = 0, amp = 1, freq = 1, norm = 0
+    for (let o = 0; o < octaves; o++) {
+        sum += amp * perlin.get(x*scale*freq + o*100, y*scale*freq + o*100)
+        norm += amp; amp *= gain; freq *= lacunarity
+    }
+    return sum / norm
+}

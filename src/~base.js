@@ -1,3 +1,4 @@
+{
 const canvas = document.createElement("canvas")
 canvas.id = "mainCanvas"
 document.body.prepend(canvas)
@@ -126,3 +127,4 @@ window.addEventListener('keydown', e => {
 })
 
 resize()
+}
