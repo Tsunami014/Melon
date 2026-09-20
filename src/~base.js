@@ -1,3 +1,4 @@
+let posToWorld;
 {
 const canvas = document.createElement("canvas")
 canvas.id = "mainCanvas"
@@ -32,6 +33,14 @@ function drawHexagon(x, y, fillColor) {
     ctx.stroke()
 }
 
+posToWorld = function(strpos) {
+    const pos = (strpos || "0 0").split(' ').map(it=>parseInt(it))
+    const col = pos[0]??0
+    const row = pos[1]??0
+
+    const xoffs = (((row % 2) + 2) % 2 === 0) ? 0 : hDist / 2
+    return { x: col * hDist + xoffs, y: row * vDist }
+}
 function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 

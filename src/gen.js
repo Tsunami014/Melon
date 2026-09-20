@@ -12,7 +12,6 @@ const COLOURS = [
 
 const scale = 0.045
 getPixelAt = function(x, y) {
-    if (x == 0 && y == 0) return `hsl(302 80% 50%)`
     let val = perlinOctaves(x, y, scale, 5, 0.5, 2)
 
     const worldscale = 3
