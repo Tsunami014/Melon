@@ -18,7 +18,7 @@ getPixelAt = function(x, y) {
     val = Math.max(Math.min((val*worldscale+1)/2, 1), 0)
 
     {
-    const heightscale = 2
+    const heightscale = 1.9
     const v2 = val ** heightscale
     val = v2 / (v2 + (1-val)**heightscale)
     }
