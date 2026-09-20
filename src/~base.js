@@ -3,12 +3,6 @@ document.body.prepend(canvas)
 const ctx = canvas.getContext('2d')
 ctx.imageSmoothingEnabled = false
 
-function getRandomColor() {
-    const hue = Math.floor(Math.random() * 360)
-    const lightness = Math.floor(Math.random() * 40) + 40
-    return `hsl(${hue}, 80%, ${lightness}%)`
-}
-
 const scale = 3
 const hexRadius = 12
 
@@ -47,7 +41,7 @@ function drawGrid() {
         for (let col = 0; col < cols; col++) {
             const x = col * hDist + xoffs
             const y = row * vDist - hexRadius
-            drawHexagon(x, y, getRandomColor())
+            drawHexagon(x, y, getPixelAt(x, y))
         }
     }
 }
