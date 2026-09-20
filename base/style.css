@@ -1,0 +1,4 @@
+* { font-family: sans-serif; }
+
+html, body { margin: 0; }
+canvas { width: 100vw; image-rendering: pixelated; }
