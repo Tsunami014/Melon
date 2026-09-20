@@ -18,6 +18,11 @@ const BIOMES = [
         [95, 55, true],
         [85, 40, true],
         [85, 35, true],
+    ], [ // Low hills
+        [95, 55, true],
+        [85, 40, true],
+        [40, 40, true, 30],
+        [40, 40, true, 30],
     ], [ // Hills
         [95, 55, true],
         [85, 40, true],
@@ -42,10 +47,20 @@ function adjustNoise(val) {
 }
 
 const scale = 0.045
+const riverScale = 0.03
 const biomeScale = 0.02
 const heightscale = 1.9
+const rivercutoff = 0.2
+const oceancutoff = 0.3
 getPixelAt = function(x, y) {
-    let val = adjustNoise(perlinOctaves(x, y, scale, 5, 0.5, 2))
+    let val = adjustNoise(perlinOctaves(x, y, scale, 5, 0.6, 2))
+
+    {
+    let river = perlinOctaves(x-4321, y+4321, riverScale, 2, 0.6, 2)
+    river = Math.min(Math.abs(river), rivercutoff)/rivercutoff
+    river = (1-river)*oceancutoff
+    val = Math.max(val - river, 0)
+    }
 
     {
     const v2 = val ** heightscale
@@ -53,12 +68,12 @@ getPixelAt = function(x, y) {
     }
 
     var colopts;
-    if (val <= 0.6) {
-        val = val/0.6
+    if (val <= oceancutoff) {
+        val = val/oceancutoff
         colopts = WATER
     } else {
-        val = (val-0.6)/0.4
-        let coval = adjustNoise(perlinOctaves(x+1234, y-4321, biomeScale, 2, 0.5, 2))
+        val = (val-oceancutoff)/oceancutoff
+        let coval = adjustNoise(perlinOctaves(x+1234, y-1234, biomeScale, 2, 0.6, 2))
         colopts = BIOMES[Math.floor(Math.min(coval, 0.999)*BIOMES.length)]
     }
     val = Math.min(val, 0.999)
