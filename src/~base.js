@@ -35,8 +35,8 @@ function drawHexagon(x, y, fillColor) {
 function drawGrid() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    const cx = Math.round(camX)
-    const cy = Math.round(camY)
+    const cx = Math.round(camX - canvas.width / 2)
+    const cy = Math.round(camY - canvas.height / 2)
 
     const firstRow = Math.floor(cy / vDist) - 1
     const lastRow = Math.ceil((cy + canvas.height) / vDist) + 2
@@ -47,12 +47,10 @@ function drawGrid() {
         const firstCol = Math.floor((cx - xoffs) / hDist) - 1
         const lastCol = Math.ceil((cx + canvas.width - xoffs) / hDist) + 1
 
-        const worldY = row * vDist - hexRadius
-
+        const worldY = row * vDist
         for (let col = firstCol; col <= lastCol; col++) {
             const worldX = col * hDist + xoffs
-
-            drawHexagon(worldX - cx, worldY - cy, getPixelAt(worldX, worldY))
+            drawHexagon(worldX - cx, worldY - cy, getPixelAt(col, row))
         }
     }
 }
