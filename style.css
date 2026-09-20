@@ -1,1 +1,1 @@
-*{font-family:sans-serif}html,body{margin:0}canvas{width:100vw;image-rendering:pixelated}
+*{font-family:sans-serif}html,body{margin:0;overflow:clip}canvas{width:100vw;image-rendering:pixelated}body>*:not(#mainCanvas){display:none}
