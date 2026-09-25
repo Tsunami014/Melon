@@ -70,12 +70,6 @@ function clampCam() {
     camY = clampAxis(camY, loY, hiY)
 }
 
-function moveCam(dx, dy) {
-    camX += dx
-    camY += dy
-    clampCam()
-}
-
 function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -123,15 +117,50 @@ function resize() {
 }
 window.addEventListener('resize', resize)
 
+
+var iafid; // inertia animation frame id
+function moveCam(dx, dy) {
+    camX += dx
+    camY += dy
+    clampCam()
+    if (iafid) cancelAnimationFrame(iafid)
+    iafid = requestAnimationFrame(()=>{
+        iafid = null
+        inertia(dx, dy)
+    })
+}
+
 let dragging = false
 let lastX = 0
 let lastY = 0
+const friction = 0.88
+const rememberedDrags = 3
 
 canvas.style.touchAction = 'none'
 canvas.style.cursor = 'grab'
 
+function inertia(x, y) {
+    if (dragging) return
+
+    x *= friction
+    y *= friction
+
+    if (Math.abs(x) < 0.01) {
+        x = 0
+    }
+    if (Math.abs(y) < 0.01) {
+        y = 0
+        if (x == 0) return;
+    }
+
+    moveCam(x, y)
+    requestDraw()
+}
+
+var lastDrags
 canvas.addEventListener('pointerdown', e => {
     dragging = true
+    lastDrags = []
     lastX = e.clientX
     lastY = e.clientY
     canvas.setPointerCapture(e.pointerId)
@@ -140,7 +169,11 @@ canvas.addEventListener('pointerdown', e => {
 
 canvas.addEventListener('pointermove', e => {
     if (!dragging) return
-    moveCam(-(e.clientX - lastX) / scale, -(e.clientY - lastY) / scale)
+    const dx = -(e.clientX - lastX) / scale
+    const dy = -(e.clientY - lastY) / scale
+    lastDrags = lastDrags.slice(-rememberedDrags)
+    lastDrags.push([dx,dy])
+    moveCam(dx, dy)
     lastX = e.clientX
     lastY = e.clientY
     requestDraw()
@@ -148,6 +181,11 @@ canvas.addEventListener('pointermove', e => {
 
 function endDrag() {
     dragging = false
+    if (lastDrags && lastDrags.length > 0) {
+        const tots = lastDrags.reduce((prev,i)=>[prev[0]+i[0], prev[1]+i[1]], [0,0])
+        moveCam(tots[0]/lastDrags.length, tots[1]/lastDrags.length)
+    }
+    lastDrags = null
     canvas.style.cursor = 'grab'
 }
 canvas.addEventListener('pointerup', endDrag)
@@ -160,7 +198,7 @@ canvas.addEventListener('wheel', e => {
 }, { passive: false })
 
 window.addEventListener('keydown', e => {
-    const step = 4 * hexRadius
+    const step = hexRadius
     switch (e.key) {
         case 'ArrowLeft': moveCam(-step, 0); break
         case 'ArrowRight': moveCam(step, 0); break
