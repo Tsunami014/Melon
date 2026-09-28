@@ -6,6 +6,7 @@ document.body.prepend(canvas)
 const ctx = canvas.getContext('2d')
 
 const scale = 3
+const smooth = true
 const hexRadius = 12
 
 const hexWidth = Math.round(Math.sqrt(3) * hexRadius / 2) * 2
@@ -16,6 +17,7 @@ const hDist = hexWidth
 const vDist = hexRadius * 1.5
 
 let camX = 0; let camY = 0
+let viewW = 0; let viewH = 0
 
 function drawHexagon(x, y, fillColor) {
     ctx.beginPath()
@@ -71,19 +73,22 @@ function clampCam() {
 }
 
 function update() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.setTransform(canvas.width / viewW, 0, 0, canvas.height / viewH, 0, 0)
 
-    const cx = Math.round(camX - canvas.width / 2)
-    const cy = Math.round(camY - canvas.height / 2)
+    const snap = smooth ? (v => v) : Math.round
+    const cx = snap(camX - viewW / 2)
+    const cy = snap(camY - viewH / 2)
 
     const firstRow = Math.floor(cy / vDist) - 1
-    const lastRow = Math.ceil((cy + canvas.height) / vDist) + 2
+    const lastRow = Math.ceil((cy + viewH) / vDist) + 2
 
     for (let row = firstRow; row <= lastRow; row++) {
         const xoffs = (((row % 2) + 2) % 2 === 0) ? 0 : hDist / 2
 
         const firstCol = Math.floor((cx - xoffs) / hDist) - 1
-        const lastCol = Math.ceil((cx + canvas.width - xoffs) / hDist) + 1
+        const lastCol = Math.ceil((cx + viewW - xoffs) / hDist) + 1
 
         const worldY = row * vDist
         for (let col = firstCol; col <= lastCol; col++) {
@@ -93,8 +98,8 @@ function update() {
     }
 
     const rect = canvas.getBoundingClientRect()
-    const sx = rect.width / canvas.width
-    const sy = rect.height / canvas.height
+    const sx = rect.width / viewW
+    const sy = rect.height / viewH
     placeElms(cx, cy, sx, sy)
 }
 
@@ -109,9 +114,20 @@ function requestDraw() {
 }
 
 function resize() {
-    canvas.width = Math.ceil(window.innerWidth/scale)
-    canvas.height = Math.ceil(window.innerHeight/scale)
-    ctx.imageSmoothingEnabled = false
+    viewW = Math.ceil(window.innerWidth / scale)
+    viewH = Math.ceil(window.innerHeight / scale)
+
+    if (smooth) {
+        const dpr = window.devicePixelRatio || 1
+        canvas.width = Math.round(window.innerWidth * dpr)
+        canvas.height = Math.round(window.innerHeight * dpr)
+    } else {
+        canvas.width = viewW
+        canvas.height = viewH
+    }
+
+    ctx.imageSmoothingEnabled = smooth
+    canvas.style.imageRendering = smooth ? 'auto' : 'pixelated'
     clampCam()
     update()
 }
