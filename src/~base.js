@@ -209,17 +209,24 @@ canvas.addEventListener('pointercancel', endDrag)
 
 canvas.addEventListener('wheel', e => {
     e.preventDefault()
-    moveCam(e.deltaX / scale, e.deltaY / scale)
+    var dx = e.deltaX; var dy = e.deltaY
+    if (e.shiftKey && dx === 0) { dx = dy; dy = 0 }
+    moveCam(dx / scale, dy / scale)
     requestDraw()
 }, { passive: false })
 
 window.addEventListener('keydown', e => {
     const step = hexRadius
+    const bigstep = 3.5*hexRadius
     switch (e.key) {
         case 'ArrowLeft': moveCam(-step, 0); break
         case 'ArrowRight': moveCam(step, 0); break
         case 'ArrowUp': moveCam(0, -step); break
         case 'ArrowDown': moveCam(0, step); break
+        case 'Home': moveCam(-bigstep, 0); break
+        case 'End': moveCam(bigstep, 0); break
+        case 'PageUp': moveCam(0, -bigstep); break
+        case 'PageDown': moveCam(0, bigstep); break
         default: return
     }
     e.preventDefault()
