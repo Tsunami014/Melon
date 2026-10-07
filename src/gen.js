@@ -2,42 +2,43 @@ let getPixelAt;
 {
 const WATER = [
     // hue, lightness, whether the colour above is darker, saturation (default 80)
-    [220, 45, false],
-    [200, 55, false],
-    [180, 50, false],
-    [50, 60, true], // Sand
+    [225, 48, false, 55],
+    [205, 56, false, 58],
+    [186, 52, false, 50],
+    [38, 66, true, 55],
 ];
+
 const BIOMES = [
     [ // Forest
-        [95, 55, true],
-        [130, 25, true],
+        [105, 52, true, 40],
+        [140, 28, true, 30],
     ], [ // Plains
-        [95, 55, true],
-        [85, 40, true],
+        [105, 52, true, 40],
+        [95, 42, true, 38],
     ], [ // More plains
-        [95, 55, true],
-        [85, 40, true],
-        [85, 35, true],
+        [105, 52, true, 40],
+        [95, 42, true, 38],
+        [95, 35, true, 36],
     ], [ // Low hills
-        [95, 55, true],
-        [85, 40, true],
-        [40, 40, true, 30],
-        [40, 40, true, 30],
+        [105, 52, true, 40],
+        [95, 42, true, 38],
+        [30, 42, true, 28],
+        [30, 42, true, 28],
     ], [ // Hills
-        [95, 55, true],
-        [85, 40, true],
-        [40, 40, true, 30],
-        [40, 40, true, 30],
-        [200, 30, true, 8],
+        [105, 52, true, 40],
+        [95, 42, true, 38],
+        [30, 42, true, 28],
+        [30, 42, true, 28],
+        [230, 36, true, 14],
     ], [ // Mountains
-        [95, 55, true],
-        [85, 40, true],
-        [200, 30, false, 8],
-        [200, 35, false, 8],
-        [200, 40, false, 8],
-        [200, 45, false, 8],
-        [200, 50, false, 8],
-        [70, 80, false, 8],
+        [105, 52, true, 40],
+        [95, 42, true, 38],
+        [230, 32, false, 14],
+        [229, 38, false, 14],
+        [228, 44, false, 15],
+        [227, 50, false, 16],
+        [227, 56, false, 18],
+        [226, 85, false, 30],
     ]
 ];
 
