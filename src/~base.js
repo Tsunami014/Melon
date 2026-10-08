@@ -247,10 +247,10 @@ window.addEventListener('keydown', e => {
     const step = 0.75*hexRadius
     const bigstep = 2*hexRadius
     switch (e.key) {
-        case 'ArrowLeft': moveCam(-step, 0); break
-        case 'ArrowRight': moveCam(step, 0); break
-        case 'ArrowUp': moveCam(0, -step); break
-        case 'ArrowDown': moveCam(0, step); break
+        case 'h': case 'ArrowLeft': moveCam(-step, 0); break
+        case 'l': case 'ArrowRight': moveCam(step, 0); break
+        case 'k': case 'ArrowUp': moveCam(0, -step); break
+        case 'j': case 'ArrowDown': moveCam(0, step); break
         case 'Home': moveCam(-bigstep, 0); break
         case 'End': moveCam(bigstep, 0); break
         case 'PageUp': moveCam(0, -bigstep); break
