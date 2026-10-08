@@ -36,7 +36,7 @@ function drawHexagon(x, y, fillColor) {
 }
 
 posToWorld = function(strpos) {
-    const pos = (strpos || "0 0").split(' ').map(it=>parseInt(it))
+    const pos = (strpos || "0 0").split(' ').map(it=>parseFloat(it))
     const col = pos[0]??0
     const row = pos[1]??0
 
@@ -45,11 +45,9 @@ posToWorld = function(strpos) {
 }
 
 function readBound(name) {
-    for (const el of [canvas, document.body, document.documentElement]) {
-        const v = el?.getAttribute(name)
-        if (v != null && v.trim() !== '') {
-            return posToWorld(v)
-        }
+    const v = document.body.getAttribute(name)
+    if (v != null && v.trim() !== '') {
+        return posToWorld(v)
     }
     return null
 }
