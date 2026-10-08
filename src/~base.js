@@ -1,5 +1,7 @@
 let posToWorld;
 {
+const root = document.documentElement
+
 const canvas = document.createElement("canvas")
 canvas.id = "mainCanvas"
 document.body.prepend(canvas)
@@ -166,7 +168,21 @@ function inertia(x, y) {
 
 const maxDragAge = 100 // ms
 var lastDrags
-canvas.addEventListener('pointerdown', e => {
+var moved = false
+var clickable
+window.addEventListener('pointerdown', e => {
+    root.classList.remove('block')
+    const elm = e.target
+    clickable = e.target? e.target.closest('.allowclick, .allowdrag') : null
+    if (clickable && clickable.classList.contains('allowdrag')) {
+        clickable = null
+        return;
+    }
+    if (elm && elm !== canvas && elm !== root && elm !== document.body && !clickable) {
+        return;
+    }
+    root.classList.add('block')
+    moved = false
     dragging = true
     lastDrags = []
     lastX = e.clientX
@@ -178,6 +194,7 @@ canvas.addEventListener('pointerdown', e => {
 
 canvas.addEventListener('pointermove', e => {
     if (!dragging) return
+    moved = true
     const dx = -(e.clientX - lastX)
     const dy = -(e.clientY - lastY)
     lastDrags = lastDrags.slice(-rememberedDrags)
@@ -189,6 +206,12 @@ canvas.addEventListener('pointermove', e => {
 })
 
 function endDrag() {
+    if (!dragging) return
+    root.classList.remove('block')
+    if (!moved && clickable) {
+        clickable.click()
+    }
+    clickable = null
     dragging = false
     if (lastDrags) {
         const now = performance.now()
@@ -204,8 +227,13 @@ function endDrag() {
     lastDrags = null
     canvas.style.cursor = 'grab'
 }
-canvas.addEventListener('pointerup', endDrag)
-canvas.addEventListener('pointercancel', endDrag)
+window.addEventListener('pointerup', endDrag)
+window.addEventListener('pointercancel', endDrag)
+
+// The only click an .allowclick element should ever receive is the synthetic one from endDrag
+window.addEventListener('click', e => {
+    if (e.isTrusted && e.target.closest?.('.allowclick')) e.stopPropagation()
+}, true)
 
 window.addEventListener('wheel', e => {
     e.preventDefault()

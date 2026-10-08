@@ -34,7 +34,7 @@ section {
     </section>
     <section data-pos="3 4">
         <p>To use, copy the below code into the header;</p>
-        <script>
+        <script>{
 const nelm = document.createElement('p')
 nelm.textContent =
 `<link rel="stylesheet" href="${location.origin}/style.css">
@@ -43,7 +43,7 @@ nelm.textContent =
 nelm.className = 'code'
 
 document.currentScript.replaceWith(nelm)
-        </script>
+}</script>
         <p>These scripts are minified for your convenience!</p>
     </section>
     <section data-pos="0 8">
@@ -51,9 +51,21 @@ document.currentScript.replaceWith(nelm)
         Without anything else, everything will be placed at (0,0).<br>
         Add <span class="code">data-pos="x y"</span> to set the position of the element (in hexagons)</p>
     </section>
-    <section data-pos="0 12">
+    <section data-pos="-4 12">
         <p>Additionally, <span class="code">data-min="x y"</span> and <span class="code">data-max="x y"</span> can be added<br>
         to the body tag to define the minimum and maximum positions<br>
         the <i>centre of the camera</i> can reach (in hexagons).</p>
+    </section>
+    <section data-pos="4 12" class="allowclick nosel">
+        <p>Use the class <span class="code allowdrag">allowclick</span><br>to allow clicking as well as dragging!</p>
+        <p>Click this!</p>
+        <script>{
+const nelm = document.createElement('p')
+nelm.textContent = "0"
+document.currentScript.replaceWith(nelm)
+nelm.parentElement.onclick = ()=>{
+    nelm.textContent = parseInt(nelm.textContent)+1
+}
+}</script>
     </section>
 </body>

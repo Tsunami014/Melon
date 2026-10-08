@@ -18,3 +18,23 @@ body > *:not(#mainCanvas) {
     translate: -50% -50%;
     width: max-content;
 }
+
+.allowclick {
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+:root.block *.allowclick { pointer-events: none !important; }
+
+.nosel {
+    -webkit-user-drag: none;
+    user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.allowdrag {
+    -webkit-user-drag: element;
+    user-drag: element;
+    -webkit-user-select: text;
+    user-select: text;
+    cursor: initial;
+}
