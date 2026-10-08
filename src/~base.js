@@ -207,7 +207,7 @@ function endDrag() {
 canvas.addEventListener('pointerup', endDrag)
 canvas.addEventListener('pointercancel', endDrag)
 
-canvas.addEventListener('wheel', e => {
+window.addEventListener('wheel', e => {
     e.preventDefault()
     var dx = e.deltaX; var dy = e.deltaY
     if (e.shiftKey && dx === 0) { dx = dy; dy = 0 }
