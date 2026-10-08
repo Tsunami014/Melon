@@ -173,12 +173,14 @@ function inertia(x, y) {
     requestDraw()
 }
 
+const maxDragAge = 100 // ms
 var lastDrags
 canvas.addEventListener('pointerdown', e => {
     dragging = true
     lastDrags = []
     lastX = e.clientX
     lastY = e.clientY
+    if (iafid) { cancelAnimationFrame(iafid); iafid = null }
     canvas.setPointerCapture(e.pointerId)
     canvas.style.cursor = 'grabbing'
 })
@@ -188,7 +190,7 @@ canvas.addEventListener('pointermove', e => {
     const dx = -(e.clientX - lastX) / scale
     const dy = -(e.clientY - lastY) / scale
     lastDrags = lastDrags.slice(-rememberedDrags)
-    lastDrags.push([dx,dy])
+    lastDrags.push([dx, dy, performance.now()])
     moveCam(dx, dy)
     lastX = e.clientX
     lastY = e.clientY
@@ -197,9 +199,16 @@ canvas.addEventListener('pointermove', e => {
 
 function endDrag() {
     dragging = false
-    if (lastDrags && lastDrags.length > 0) {
-        const tots = lastDrags.reduce((prev,i)=>[prev[0]+i[0], prev[1]+i[1]], [0,0])
-        moveCam(tots[0]/lastDrags.length, tots[1]/lastDrags.length)
+    if (lastDrags) {
+        const now = performance.now()
+        const recent = lastDrags.filter(d => now - d[2] <= maxDragAge)
+        if (recent.length > 0) {
+            const tots = recent.reduce((p, d) => [p[0] + d[0], p[1] + d[1]], [0, 0])
+            moveCam(tots[0] / recent.length, tots[1] / recent.length)
+        } else if (iafid) {
+            cancelAnimationFrame(iafid)
+            iafid = null
+        }
     }
     lastDrags = null
     canvas.style.cursor = 'grab'
