@@ -5,7 +5,7 @@ const root = document.documentElement
 const canvas = document.createElement("canvas")
 canvas.id = "mainCanvas"
 document.body.prepend(canvas)
-const ctx = canvas.getContext('2d')
+const ctx = canvas.getContext('2d', { alpha: false })
 
 const hexRadius = 34
 const hexThick = 5
@@ -111,16 +111,14 @@ function requestDraw() {
 }
 
 function resize() {
-    viewW = window.innerWidth
-    viewH = window.innerHeight
-    canvas.style.width = viewW + 'px'
-    canvas.style.height = viewH + 'px'
-
-    dpr = window.devicePixelRatio || 1
-    canvas.width = Math.round(viewW * dpr)
-    canvas.height = Math.round(viewH * dpr)
-
-    ctx.imageSmoothingEnabled = true
+    const w = window.innerWidth, h = window.innerHeight
+    const d = Math.min(window.devicePixelRatio || 1, 2)
+    if (w === viewW && h === viewH && d === dpr) return
+    viewW = w; viewH = h; dpr = d
+    canvas.style.width = w + 'px'
+    canvas.style.height = h + 'px'
+    canvas.width = Math.round(w * dpr)
+    canvas.height = Math.round(h * dpr)
     clampCam()
     update()
 }
