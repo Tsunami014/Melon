@@ -1,1 +1,1 @@
-*{font-family:sans-serif}html,body{margin:0;overflow:clip}canvas{width:100vw;height:100vh;image-rendering:pixelated}body>*:not(#mainCanvas){position:absolute;top:calc(110vh + 50%);translate:-50% -50%;width:max-content}
+*{font-family:sans-serif}html{-webkit-text-size-adjust:100%;text-size-adjust:100%}html,body{margin:0;overflow:clip}canvas{display:block;position:fixed;top:0;left:0;image-rendering:auto}body>*:not(#mainCanvas){position:absolute;top:calc(110vh + 50%);translate:-50% -50%;width:max-content}

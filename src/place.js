@@ -5,11 +5,11 @@ let placeElms;
         elms.push(child)
     }
 
-    placeElms = function(cx, cy, sx, sy) {
+    placeElms = function(cx, cy) {
         for (const e of elms) {
             const wpos = posToWorld(e.dataset.pos)
-            e.style.left = ((wpos.x - cx) * sx) + 'px'
-            e.style.top = ((wpos.y - cy) * sy) + 'px'
+            e.style.left = (wpos.x - cx) + 'px'
+            e.style.top = (wpos.y - cy) + 'px'
         }
     }
 }

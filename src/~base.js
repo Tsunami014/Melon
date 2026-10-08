@@ -5,11 +5,11 @@ canvas.id = "mainCanvas"
 document.body.prepend(canvas)
 const ctx = canvas.getContext('2d')
 
-const scale = 3
-const smooth = true
-const hexRadius = 12
+const hexRadius = 34
+const hexThick = 5
+const scrollDamp = 0.45
 
-const hexWidth = Math.round(Math.sqrt(3) * hexRadius / 2) * 2
+const hexWidth = Math.sqrt(3) * hexRadius
 const halfW = hexWidth / 2
 const halfR = hexRadius / 2
 
@@ -31,7 +31,7 @@ function drawHexagon(x, y, fillColor) {
     ctx.fillStyle = fillColor
     ctx.fill()
     ctx.strokeStyle = '#111'
-    ctx.lineWidth = 2
+    ctx.lineWidth = hexThick
     ctx.stroke()
 }
 
@@ -70,14 +70,14 @@ function clampCam() {
     camY = clampAxis(camY, loY, hiY)
 }
 
+let dpr = 1
 function update() {
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.setTransform(canvas.width / viewW, 0, 0, canvas.height / viewH, 0, 0)
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-    const snap = smooth ? (v => v) : Math.round
-    const cx = snap(camX - viewW / 2)
-    const cy = snap(camY - viewH / 2)
+    const cx = camX - viewW / 2
+    const cy = camY - viewH / 2
 
     const firstRow = Math.floor(cy / vDist) - 1
     const lastRow = Math.ceil((cy + viewH) / vDist) + 2
@@ -95,10 +95,7 @@ function update() {
         }
     }
 
-    const rect = canvas.getBoundingClientRect()
-    const sx = rect.width / viewW
-    const sy = rect.height / viewH
-    placeElms(cx, cy, sx, sy)
+    placeElms(cx, cy)
 }
 
 let drawQueued = false
@@ -112,20 +109,16 @@ function requestDraw() {
 }
 
 function resize() {
-    viewW = Math.ceil(window.innerWidth / scale)
-    viewH = Math.ceil(window.innerHeight / scale)
+    viewW = window.innerWidth
+    viewH = window.innerHeight
+    canvas.style.width = viewW + 'px'
+    canvas.style.height = viewH + 'px'
 
-    if (smooth) {
-        const dpr = window.devicePixelRatio || 1
-        canvas.width = Math.round(window.innerWidth * dpr)
-        canvas.height = Math.round(window.innerHeight * dpr)
-    } else {
-        canvas.width = viewW
-        canvas.height = viewH
-    }
+    dpr = window.devicePixelRatio || 1
+    canvas.width = Math.round(viewW * dpr)
+    canvas.height = Math.round(viewH * dpr)
 
-    ctx.imageSmoothingEnabled = smooth
-    canvas.style.imageRendering = smooth ? 'auto' : 'pixelated'
+    ctx.imageSmoothingEnabled = true
     clampCam()
     update()
 }
@@ -185,8 +178,8 @@ canvas.addEventListener('pointerdown', e => {
 
 canvas.addEventListener('pointermove', e => {
     if (!dragging) return
-    const dx = -(e.clientX - lastX) / scale
-    const dy = -(e.clientY - lastY) / scale
+    const dx = -(e.clientX - lastX)
+    const dy = -(e.clientY - lastY)
     lastDrags = lastDrags.slice(-rememberedDrags)
     lastDrags.push([dx, dy, performance.now()])
     moveCam(dx, dy)
@@ -218,13 +211,13 @@ canvas.addEventListener('wheel', e => {
     e.preventDefault()
     var dx = e.deltaX; var dy = e.deltaY
     if (e.shiftKey && dx === 0) { dx = dy; dy = 0 }
-    moveCam(dx / scale, dy / scale)
+    moveCam(dx * scrollDamp, dy * scrollDamp)
     requestDraw()
 }, { passive: false })
 
 window.addEventListener('keydown', e => {
-    const step = hexRadius
-    const bigstep = 3.5*hexRadius
+    const step = 0.75*hexRadius
+    const bigstep = 2*hexRadius
     switch (e.key) {
         case 'ArrowLeft': moveCam(-step, 0); break
         case 'ArrowRight': moveCam(step, 0); break

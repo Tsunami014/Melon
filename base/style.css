@@ -1,10 +1,16 @@
 * { font-family: sans-serif; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
-html, body { margin: 0; overflow: clip; }
+html, body {
+    margin: 0;
+    overflow: clip;
+}
 canvas {
-    width: 100vw;
-    height: 100vh;
-    image-rendering: pixelated;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    image-rendering: auto;
 }
 body > *:not(#mainCanvas) {
     position: absolute;
