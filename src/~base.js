@@ -140,8 +140,11 @@ function moveCam(dx, dy) {
 let dragging = false
 let lastX = 0
 let lastY = 0
+var startX = 0
+var startY = 0
 const friction = 0.88
 const rememberedDrags = 3
+const clickSlop = 3**2
 
 canvas.style.touchAction = 'none'
 canvas.style.cursor = 'grab'
@@ -183,8 +186,8 @@ window.addEventListener('pointerdown', e => {
     moved = false
     dragging = true
     lastDrags = []
-    lastX = e.clientX
-    lastY = e.clientY
+    startX = lastX = e.clientX
+    startY = lastY = e.clientY
     if (iafid) { cancelAnimationFrame(iafid); iafid = null }
     canvas.setPointerCapture(e.pointerId)
     canvas.style.cursor = 'grabbing'
@@ -192,7 +195,6 @@ window.addEventListener('pointerdown', e => {
 
 canvas.addEventListener('pointermove', e => {
     if (!dragging) return
-    moved = true
     const dx = -(e.clientX - lastX)
     const dy = -(e.clientY - lastY)
     lastDrags = lastDrags.slice(-rememberedDrags)
@@ -200,6 +202,7 @@ canvas.addEventListener('pointermove', e => {
     moveCam(dx, dy)
     lastX = e.clientX
     lastY = e.clientY
+    if (!moved && Math.abs(lastX-startX)**2 + Math.abs(lastY-startY)**2 >= clickSlop) moved = true
     requestDraw()
 })
 
