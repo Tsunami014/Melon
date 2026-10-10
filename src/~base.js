@@ -172,6 +172,7 @@ var lastDrags
 var moved = false
 var clickable
 window.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return
     root.classList.remove('block')
     const elm = e.target
     clickable = e.target? e.target.closest('.allowclick, .allowdrag') : null
@@ -195,6 +196,7 @@ window.addEventListener('pointerdown', e => {
 
 canvas.addEventListener('pointermove', e => {
     if (!dragging) return
+    if (!(e.buttons & 1)) { endDrag(); return } // Left button released
     const dx = -(e.clientX - lastX)
     const dy = -(e.clientY - lastY)
     lastDrags = lastDrags.slice(-rememberedDrags)
